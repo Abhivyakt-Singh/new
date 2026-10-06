@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rizq Menu</title>
+<meta name="description" content="Rizq — Food, Beverage and Shisha menu">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#110a0f;--card:#22141d;--card2:#2b1a25;--line:rgba(244,160,58,.18);
+  --gold:#f4a03a;--gold2:#ffd08a;--cream:#f6ead7;--muted:#b9a79a;--veg:#2fd36b;--radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(244,160,58,.10), transparent 60%),
+    radial-gradient(900px 600px at -10% 20%, rgba(120,50,90,.22), transparent 60%),
+    var(--bg);
+  color:var(--cream);font-family:"Jost",system-ui,sans-serif;font-weight:400;line-height:1.5;min-height:100vh;overflow-x:hidden;
+}
+@media (pointer:fine){ body, a, button, input, label, .pcard{cursor:none} }
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));z-index:900;box-shadow:0 0 12px var(--gold)}
+.cursor,.cursor-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:1999;border-radius:50%;transform:translate(-100px,-100px)}
+.cursor{width:38px;height:38px;border:1.5px solid var(--gold);transition:width .25s,height .25s,background .25s,border-color .25s,margin .25s;margin:-19px 0 0 -19px}
+.cursor-dot{width:6px;height:6px;background:var(--gold);margin:-3px 0 0 -3px}
+.cursor.hover{width:62px;height:62px;margin:-31px 0 0 -31px;background:rgba(244,160,58,.14)}
+.cursor.drag{width:70px;height:70px;margin:-35px 0 0 -35px;background:rgba(244,160,58,.22);border-color:var(--gold2)}
+@media (pointer:coarse){.cursor,.cursor-dot{display:none}}
+
+.top{position:sticky;top:0;z-index:100;background:rgba(17,10,15,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top-row{max-width:1280px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:28px;letter-spacing:.32em;color:var(--gold);text-decoration:none;margin-right:auto}
+.brand small{display:block;font-family:"Jost";font-size:9px;letter-spacing:.5em;color:var(--muted);font-weight:400;margin-top:-4px}
+.switch{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+.switch button{background:none;border:0;color:var(--muted);font:500 13px "Jost";letter-spacing:.16em;text-transform:uppercase;padding:9px 20px;border-radius:999px;transition:.25s}
+.switch button.on{background:linear-gradient(135deg,var(--gold),#e07c1a);color:#1b0d05;box-shadow:0 4px 18px rgba(244,160,58,.35)}
+.tools{display:flex;gap:10px;align-items:center}
+.search{background:var(--card);border:1px solid var(--line);border-radius:999px;color:var(--cream);font:400 14px "Jost";padding:10px 18px;width:210px;outline:none;transition:.25s}
+.search:focus{border-color:var(--gold);width:250px}
+.search::placeholder{color:#8c7a70}
+.vegtoggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);user-select:none;white-space:nowrap}
+.vegtoggle input{display:none}
+.vegtoggle .sw{width:40px;height:22px;border-radius:99px;background:#3a2832;position:relative;transition:.25s;border:1px solid var(--line)}
+.vegtoggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--muted);transition:.25s}
+.vegtoggle input:checked + .sw{background:rgba(47,211,107,.25);border-color:var(--veg)}
+.vegtoggle input:checked + .sw::after{left:20px;background:var(--veg)}
+.chips-wrap{border-top:1px solid rgba(244,160,58,.08)}
+.chips{max-width:1280px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;user-select:none;-webkit-user-select:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:transparent;color:var(--muted);font:500 12.5px "Jost";letter-spacing:.06em;padding:7px 15px;border-radius:999px;transition:.25s;white-space:nowrap;text-decoration:none}
+.chip:hover{color:var(--gold2);border-color:var(--gold)}
+.chip.on{background:var(--gold);color:#1b0d05;border-color:var(--gold);font-weight:600}
+
+.hero{max-width:1280px;margin:0 auto;padding:70px 20px 30px;text-align:center}
+.hero .eyebrow{letter-spacing:.55em;font-size:12px;color:var(--gold);text-transform:uppercase}
+.hero h1{font-family:"Cormorant Garamond",serif;font-weight:600;font-size:clamp(54px,11vw,128px);line-height:1;margin:10px 0 6px;letter-spacing:.06em;background:linear-gradient(180deg,var(--gold2),var(--gold) 55%,#b8661a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-weight:300;letter-spacing:.2em;font-size:14px;text-transform:uppercase}
+.orn{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px auto 0;color:var(--gold)}
+.orn::before,.orn::after{content:"";height:1px;width:min(120px,22vw);background:linear-gradient(90deg,transparent,var(--gold))}
+.orn::after{transform:scaleX(-1)}
+.stats{display:flex;justify-content:center;gap:34px;margin-top:26px;flex-wrap:wrap}
+.stats div{font-family:"Cormorant Garamond",serif;font-size:34px;color:var(--cream);line-height:1}
+.stats span{display:block;font-family:"Jost";font-size:11px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;margin-top:6px}
+.legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:20px;letter-spacing:.06em}
+.legend span{display:flex;align-items:center;gap:7px}
+
+main{max-width:1280px;margin:0 auto;padding:0 20px 40px}
+.section{padding-top:40px}
+.section-head{display:flex;align-items:flex-end;gap:18px;margin:30px 0 8px}
+.section-head h2{font-family:"Cormorant Garamond",serif;font-size:clamp(40px,7vw,76px);font-weight:600;line-height:1;color:var(--cream)}
+.section-head h2 em{color:var(--gold);font-style:normal}
+.section-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-bottom:14px}
+.group{margin-top:44px}
+.group-title{font-size:12px;letter-spacing:.5em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.group-title::after{content:"";flex:1;height:1px;background:var(--line)}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));gap:22px}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease,border-color .3s,box-shadow .3s}
+.rv.in{opacity:1;transform:none}
+.cat,.gal{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--radius);position:relative;overflow:hidden;scroll-margin-top:150px}
+.cat{padding:26px 24px 14px}
+.gal{grid-column:1/-1;padding:26px 22px 24px}
+.cat:hover,.gal:hover{border-color:rgba(244,160,58,.4)}
+.cat::before,.gal::before{content:"";position:absolute;right:-60px;top:-60px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(244,160,58,.14),transparent 70%);pointer-events:none}
+.cat h3,.gal h3{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:28px;color:var(--gold2);line-height:1.15;padding-right:44px}
+.note{font-size:11.5px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:4px}
+.count{position:absolute;right:20px;top:22px;font-size:11px;letter-spacing:.2em;color:var(--muted)}
+.items{list-style:none;margin-top:14px}
+.item{padding:11px 0;border-top:1px dashed rgba(244,160,58,.16)}
+.item:first-child{border-top:0}
+.line{display:flex;align-items:baseline;gap:10px}
+.name{font-weight:500;font-size:16px;color:var(--cream);display:flex;align-items:center;gap:8px}
+.dots{flex:1;border-bottom:1px dotted rgba(246,234,215,.25);transform:translateY(-4px);min-width:14px}
+.price{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:20px;color:var(--gold);white-space:nowrap}
+.tags{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+.tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.tag.s{color:#1b0d05;background:var(--gold);border-color:var(--gold);font-weight:600}
+.tag.g{color:#e7c98f}
+.tag.n{color:#8fe3ae;border-color:rgba(47,211,107,.35)}
+.tag.note{color:var(--gold2);border-color:rgba(244,160,58,.35)}
+.vd{flex:none;width:15px;height:15px;border:1.5px solid var(--veg);border-radius:3px;display:inline-grid;place-items:center}
+.vd::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--veg)}
+.item:hover .name{color:var(--gold2)}
+
+/* photo cards */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,255px),1fr));gap:18px;margin-top:20px;list-style:none}
+.pcard{background:#1a0e16;border:1px solid var(--line);border-radius:14px;overflow:hidden;transition:transform .35s,border-color .35s,box-shadow .35s;display:flex;flex-direction:column}
+.pcard:hover{transform:translateY(-5px);border-color:rgba(244,160,58,.6);box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.ph{aspect-ratio:16/10;background:#120a10;position:relative;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s ease}
+.pcard:hover .ph img{transform:scale(1.07)}
+.ph.zoom{cursor:zoom-in}
+.ph.empty{display:grid;place-items:center;background:linear-gradient(145deg,#3a1f2e,#1d0f18)}
+.ph.empty span{font-family:"Cormorant Garamond",serif;font-weight:700;font-size:34px;letter-spacing:.35em;padding-left:.35em;color:rgba(244,160,58,.4);border:1px solid rgba(244,160,58,.25);padding:6px 10px 6px 20px;border-radius:8px}
+.ph .badge{position:absolute;left:10px;top:10px;display:flex;gap:6px}
+.ph .badge .vd{background:rgba(17,10,15,.7);width:18px;height:18px;border-radius:4px}
+.pb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.pb .line{align-items:flex-start;justify-content:space-between;gap:12px}
+.pb .name{font-size:15.5px;line-height:1.3;align-items:flex-start}
+.pb .price{font-size:19px}
+.pb .tags{margin-top:0}
+.empty-msg{text-align:center;color:var(--muted);padding:80px 0;font-size:18px;letter-spacing:.1em}
+.end{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.3em;text-transform:uppercase;padding:30px 0 60px}
+
+#up{position:fixed;right:20px;bottom:20px;z-index:90;width:46px;height:46px;border-radius:50%;background:var(--gold);color:#1b0d05;border:0;font-size:20px;font-weight:700;opacity:0;pointer-events:none;transition:.3s;transform:translateY(10px);box-shadow:0 8px 24px rgba(244,160,58,.35)}
+#up.show{opacity:1;pointer-events:auto;transform:none}
+
+/* lightbox */
+#lb{position:fixed;inset:0;z-index:1500;background:rgba(10,5,8,.9);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;flex-direction:column;gap:14px}
+#lb.open{display:flex}
+#lb img{max-width:min(94vw,1100px);max-height:76vh;border-radius:14px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.7);object-fit:contain}
+#lb .cap{font-family:"Cormorant Garamond",serif;font-size:30px;color:var(--gold2);text-align:center}
+#lb .cap b{color:var(--gold);margin-left:14px}
+#lb .x{position:absolute;right:18px;top:14px;background:none;border:1px solid var(--line);color:var(--cream);width:42px;height:42px;border-radius:50%;font-size:20px}
+
+@media (max-width:720px){
+  .top-row{padding:10px 14px;gap:10px}
+  .brand{font-size:22px;letter-spacing:.26em}
+  .switch button{padding:8px 13px;font-size:11.5px;letter-spacing:.1em}
+  .tools{width:100%}
+  .search{flex:1;width:auto}
+  .search:focus{width:auto}
+  .chips{padding:9px 14px}
+  .hero{padding-top:44px}
+  main{padding:0 14px 30px}
+  .cat{padding:22px 18px 10px}
+  .gal{padding:22px 14px 18px}
+  .cats{gap:16px}
+  .name{font-size:15px}
+  .cat,.gal{scroll-margin-top:190px}
+  .pgrid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .pb{padding:10px 10px 12px}
+  .pb .name{font-size:14px}
+  .pb .price{font-size:16px}
+  .pb .line{flex-direction:column;gap:2px}
+  .ph.empty span{font-size:22px}
+}
+@media (max-width:360px){.pgrid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.rv{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div class="cursor" id="cur"></div><div class="cursor-dot" id="dot"></div>
+
+<header class="top">
+  <div class="top-row">
+    <a class="brand" href="#top">RIZQ<small>THE MENU</small></a>
+    <div class="switch" id="switch">
+      <button data-go="food" class="on">Food</button>
+      <button data-go="beverages">Beverages</button>
+      <button data-go="shisha">Shisha</button>
+    </div>
+    <div class="tools">
+      <input class="search" id="q" type="search" placeholder="Search the menu…" autocomplete="off">
+      <label class="vegtoggle"><input type="checkbox" id="veg"><span class="sw"></span>Veg only</label>
+    </div>
+  </div>
+  <div class="chips-wrap"><div class="chips" id="chips"></div></div>
+</header>
+
+<div id="top"></div>
+<section class="hero">
+  <div class="eyebrow">Fine Dining · Lounge</div>
+  <h1>RIZQ</h1>
+  <p>Food, Beverage &amp; Shisha Menu</p>
+  <div class="orn">✦</div>
+  <div class="stats">
+    <div id="sFood">0<span>Dishes</span></div>
+    <div id="sBev">0<span>Beverages</span></div>
+    <div id="sShi">0<span>Shisha</span></div>
+  </div>
+  <div class="legend">
+    <span><i class="vd"></i> Vegetarian</span>
+    <span><b class="tag g">Gluten Free</b></span>
+    <span><b class="tag n">Vegan</b></span>
+    <span><b class="tag s">Signature</b></span>
+  </div>
+</section>
+
+<main id="menu"></main>
+<div class="end">✦ &nbsp; All prices in Indian Rupees (₹) &nbsp; ✦</div>
+<button id="up" aria-label="Back to top">↑</button>
+
+<div id="lb" role="dialog" aria-modal="true"><button class="x" aria-label="Close">✕</button><img alt=""><div class="cap"></div></div>
+
+<script>
+/* item: [name, [prices], tags, note, image]  tags: v=veg g=gluten free n=vegan s=signature */
+const FOOD = [{"group":"European","cats":[{"name":"Soup","items":[["Roasted Pepper Veloute",[375],"vs","","images/european-soup-roasted-pepper-veloute.jpg"],["Tomato Basil",[375],"vgs","","images/european-soup-tomato-basil.jpg"],["Creamy Wild Mushroom",[375],"vg","","images/european-soup-creamy-wild-mushroom.jpg"],["Broccoli Pea Spinach and…",[475],"v","","images/european-soup-broccoli-pea-spinach-and.jpg"]]},{"name":"Salad","items":[["Caesar Salad",[485],"v","","images/european-salad-caesar-salad.jpg"],["Caesar Salad Chicken",[585],"","","images/european-salad-caesar-salad-chicken.jpg"],["Smoked Salmon Avoc…",[1075],"","","images/european-salad-smoked-salmon-avoc.jpg"],["Creamy Buffalo Burratina",[825],"v","",""],["Quinoa E Avocado",[645],"v","","images/european-salad-quinoa-e-avocado.jpg"]]},{"name":"Starters","items":[["The Bruschetta Trio",[575],"v","","images/european-starters-the-bruschetta-trio.jpg"],["Trio Sliders",[520],"","",""],["Fish 'n' Chips",[999],"","",""],["Prawn Crostini",[1195],"","","images/european-starters-prawn-crostini.jpg"],["Chicken Classic Burger",[555],"","","images/european-starters-chicken-classic-burger.jpg"],["Tandoori Chicken Burg…",[575],"","","images/european-starters-tandoori-chicken-burg.jpg"],["Tenderloin Burger",[785],"","",""],["Rizq Cottage Cheese Burger",[695],"v","","images/european-starters-rizq-cottage-cheese-burger.jpg"],["Lentil Chickpea Veggie with…",[695],"vg","","images/european-starters-lentil-chickpea-veggie-with.jpg"],["Morocco Lamb Burger",[999],"","","images/european-starters-morocco-lamb-burger.jpg"],["Beet Root Kebab",[595],"vs","","images/european-starters-beet-root-kebab.jpg"],["Crispy Fried Onion Rings",[445],"vs","","images/european-starters-crispy-fried-onion-rings.jpg"],["Paprika Grilled Cottage Che…",[645],"v","","images/european-starters-paprika-grilled-cottage-che.jpg"],["Smoked Cheese Broc…",[645],"v","","images/european-starters-smoked-cheese-broc.jpg"],["Mac & Cheese Bowl",[495],"v","",""],["Loaded Mexican Che…",[495],"v","","images/european-starters-loaded-mexican-che.jpg"],["Fritto Misto",[1295],"","","images/european-starters-fritto-misto.jpg"],["Charcoal Grill Prawns",[1195],"","","images/european-starters-charcoal-grill-prawns.jpg"],["Smokey Garlic Grilled Fish",[1050],"","","images/european-starters-smokey-garlic-grilled-fish.jpg"]]},{"name":"Mains & Grills","items":[["Rizq Chicken",[895],"","","images/european-mains-grills-rizq-chicken.jpg"],["Braised Lamb Shank",[1775],"","",""],["Lamb Tomahawk St…",[2175],"","",""],["Crispy Atlantic Salmon",[1195],"","","images/european-mains-grills-crispy-atlantic-salmon.jpg"],["Peri Peri Grilled Chick…",[999],"","","images/european-mains-grills-peri-peri-grilled-chick.jpg"]]},{"name":"Pasta & Risotto","items":[["Spaghetti Alla Contadina",[575],"v","","images/european-pasta-risotto-spaghetti-alla-contadina.jpg"],["Penne Primavera",[575],"v","","images/european-pasta-risotto-penne-primavera.jpg"],["Risotto Morel Mushrooms",[1145],"v","",""]]},{"name":"Desserts","items":[["Chocolate Cigars",[725],"v","",""],["Blueberry Misti Doe with Sha…",[399],"v","",""],["Belgium Chocolate Ru…",[599],"v","",""],["Pistachio CheeseCake",[449],"v","",""]]},{"name":"Nibbles","items":[["Pull Apart Garlic Toast",[345],"v","","images/european-nibbles-pull-apart-garlic-toast.jpg"],["Truffle Fries",[375],"v","","images/european-nibbles-truffle-fries.jpg"],["Steamed Edamame",[450],"v","","images/european-nibbles-steamed-edamame.jpg"],["Chicken Fingers",[425],"","","images/european-nibbles-chicken-fingers.jpg"],["Grilled Fish With Ginger…",[895],"","",""],["Jacket Potatoes",[595],"v","",""]]},{"name":"Barbeque & Grills","items":[["Roasted Half Chicken",[999],"","","images/european-barbeque-grills-roasted-half-chicken.jpg"],["Barbeque Chicken Wings",[975],"","","images/european-barbeque-grills-barbeque-chicken-wings.jpg"],["Philly Cheese",[995],"","","images/european-barbeque-grills-philly-cheese.jpg"]]}]},{"group":"Lebanese","cats":[{"name":"Al Muqbilat (Cold & Hot Mezze)","items":[["Hummus",[445],"v","","images/lebanese-al-muqbilat-cold-hot-mezze-hummus.jpg"],["Baba Ghanoush",[445],"v","","images/lebanese-al-muqbilat-cold-hot-mezze-baba-ghanoush.jpg"],["Labneh",[445],"v","","images/lebanese-al-muqbilat-cold-hot-mezze-labneh.jpg"],["Moutabel",[445],"v","","images/lebanese-al-muqbilat-cold-hot-mezze-moutabel.jpg"],["Muhammara",[495],"v","","images/lebanese-al-muqbilat-cold-hot-mezze-muhammara.jpg"],["Falafel",[445],"v","","images/lebanese-al-muqbilat-cold-hot-mezze-falafel.jpg"],["Hummus With Pine Nuts",[645],"v","",""],["Shakshuka",[645],"","",""],["Chicken Sambousak",[445],"","",""],["Sambousak Bil Lahem",[545],"","",""],["Hummus With Meat",[795],"","",""]]},{"name":"Salads","items":[["Fattoush",[445],"v","","images/lebanese-salads-fattoush.jpg"],["Tabbouleh",[445],"v","","images/lebanese-salads-tabbouleh.jpg"],["Assorted Pickle",[345],"v","","images/lebanese-salads-assorted-pickle.jpg"]]},{"name":"Manakeesh","items":[["Manakeesh Al Zaatar",[395],"v","","images/lebanese-manakeesh-manakeesh-al-zaatar.jpg"],["Manakeesh Al Jibneh",[465],"v","","images/lebanese-manakeesh-manakeesh-al-jibneh.jpg"],["Manakeesh Kafta",[495],"","","images/lebanese-manakeesh-manakeesh-kafta.jpg"],["Lamb Toshka",[695],"","","images/lebanese-manakeesh-lamb-toshka.jpg"]]},{"name":"Wraps","items":[["Falafel Wrap",[395],"v","","images/lebanese-wraps-falafel-wrap.jpg"],["Shish Taouk Wrap",[625],"","","images/lebanese-wraps-shish-taouk-wrap.jpg"],["Chicken Shawarma W…",[645],"","","images/lebanese-wraps-chicken-shawarma-w.jpg"],["Adana Wrap",[895],"","","images/lebanese-wraps-adana-wrap.jpg"],["Shish Cottage Cheese Wrap",[595],"v","",""]]},{"name":"Tabaq Rayiysium (Mains & Grills)","items":[["Lamb Chops With Herb",[2895],"","","images/lebanese-tabaq-rayiysium-mains-grills-lamb-chops-with-herb.jpg"],["Shish Taouk Chicken",[745],"","","images/lebanese-tabaq-rayiysium-mains-grills-shish-taouk-chicken.jpg"],["Lamb Liver",[745],"","","images/lebanese-tabaq-rayiysium-mains-grills-lamb-liver.jpg"],["Kafta Eggplant",[845],"","","images/lebanese-tabaq-rayiysium-mains-grills-kafta-eggplant.jpg"],["Kafta Adana",[995],"","","images/lebanese-tabaq-rayiysium-mains-grills-kafta-adana.jpg"],["Kafta Arfalie",[1145],"","","images/lebanese-tabaq-rayiysium-mains-grills-kafta-arfalie.jpg"],["Mix Grill",[2599],"","","images/lebanese-tabaq-rayiysium-mains-grills-mix-grill.jpg"],["Shish Samak",[1195],"","",""],["Golden Kafta Adana",[1925],"","","images/lebanese-tabaq-rayiysium-mains-grills-golden-kafta-adana.jpg"],["Meter Kebab",[2795],"","","images/lebanese-tabaq-rayiysium-mains-grills-meter-kebab.jpg"],["Shish Cottage Cheese",[645],"v","",""],["Chicken Tangine",[895],"s","","images/lebanese-tabaq-rayiysium-mains-grills-chicken-tangine.jpg"],["Eggplant Tangine",[795],"","","images/lebanese-tabaq-rayiysium-mains-grills-eggplant-tangine.jpg"]]},{"name":"Halwayat (Desserts)","items":[["Kunafa Bil Ishta",[650],"v","","images/lebanese-halwayat-desserts-kunafa-bil-ishta.jpg"],["Baklava",[750],"v","","images/lebanese-halwayat-desserts-baklava.jpg"]]}]},{"group":"Pizza (Wood Fired)","cats":[{"name":"From The Wood Fire Oven","items":[["Margherita Alla Pomodoro",[745],"v","","images/pizza-wood-fired-from-the-wood-fire-oven-margherita-alla-pomodoro.jpg"],["Classico Di Vegeterniani",[895],"v","","images/pizza-wood-fired-from-the-wood-fire-oven-classico-di-vegeterniani.jpg"],["Quattro Formaggi",[995],"v","","images/pizza-wood-fired-from-the-wood-fire-oven-quattro-formaggi.jpg"],["Burrata Pesto Pizza",[1145],"v","","images/pizza-wood-fired-from-the-wood-fire-oven-burrata-pesto-pizza.jpg"],["Pizza Alla Pollo Salsiccia",[995],"","","images/pizza-wood-fired-from-the-wood-fire-oven-pizza-alla-pollo-salsiccia.jpg"],["Pizza Alla Carne",[1125],"","","images/pizza-wood-fired-from-the-wood-fire-oven-pizza-alla-carne.jpg"],["Pizza Alla Pancetta",[1125],"","","images/pizza-wood-fired-from-the-wood-fire-oven-pizza-alla-pancetta.jpg"],["Pesto Chicken Pizza",[1095],"","","images/pizza-wood-fired-from-the-wood-fire-oven-pesto-chicken-pizza.jpg"],["Stuffed Pocket",[745],"v","","images/pizza-wood-fired-from-the-wood-fire-oven-stuffed-pocket.jpg"],["Stuffed Pocket Non-Veg",[795],"","","images/pizza-wood-fired-from-the-wood-fire-oven-stuffed-pocket-non-veg.jpg"]]}]},{"group":"Pan Asian","cats":[{"name":"Sushi","items":[["Rainbow Roll",[945],"v","","images/pan-asian-sushi-rainbow-roll.jpg"],["Spicy Ahi Roll",[1195],"","","images/pan-asian-sushi-spicy-ahi-roll.jpg"],["Shrimp Tempura Roll",[1265],"","","images/pan-asian-sushi-shrimp-tempura-roll.jpg"],["Yasai Veg Roll",[945],"v","","images/pan-asian-sushi-yasai-veg-roll.jpg"],["Spicy Shiitake Roll",[945],"v","","images/pan-asian-sushi-spicy-shiitake-roll.jpg"],["Asparagus Tempura Roll",[845],"v","","images/pan-asian-sushi-asparagus-tempura-roll.jpg"],["Avocado and Asparagus Roll",[945],"v","","images/pan-asian-sushi-avocado-and-asparagus-roll.jpg"],["California Roll",[1495],"","","images/pan-asian-sushi-california-roll.jpg"],["Atlantic Salmon Roll",[1195],"","","images/pan-asian-sushi-atlantic-salmon-roll.jpg"]]},{"name":"Dim Sum","items":[["Veg Crystal",[585],"v","","images/pan-asian-dim-sum-veg-crystal.jpg"],["Spicy Chicken Gyoza",[695],"","","images/pan-asian-dim-sum-spicy-chicken-gyoza.jpg"],["Five Spice Chicken",[695],"","",""],["Spicy Tofu Veg",[645],"v","","images/pan-asian-dim-sum-spicy-tofu-veg.jpg"],["Truffle Mushroom",[595],"v","","images/pan-asian-dim-sum-truffle-mushroom.jpg"],["Beijing Veg",[585],"v","","images/pan-asian-dim-sum-beijing-veg.jpg"],["Chilly Cheese",[595],"v","","images/pan-asian-dim-sum-chilly-cheese.jpg"],["Prawn Har Gao",[795],"","","images/pan-asian-dim-sum-prawn-har-gao.jpg"],["Prawns & Curry",[795],"","","images/pan-asian-dim-sum-prawns-curry.jpg"]]},{"name":"Starters","items":[["Sichuan Crispy Tofu",[645],"v","","images/pan-asian-starters-sichuan-crispy-tofu.jpg"],["Schezwan Style wok Tos…",[745],"v","",""],["Thai Spice Cottage Che…",[645],"v","","images/pan-asian-starters-thai-spice-cottage-che.jpg"],["Shitake Mushroom To…",[645],"v","",""],["Crispy Honey Chilli Lotus S…",[595],"v","","images/pan-asian-starters-crispy-honey-chilli-lotus-s.jpg"],["Crispy Corn with Chili Pe…",[545],"v","","images/pan-asian-starters-crispy-corn-with-chili-pe.jpg"],["Smokey Black Pepper Chick…",[765],"","","images/pan-asian-starters-smokey-black-pepper-chick.jpg"],["Crispy Fried Tempura Prawn",[1195],"","",""],["Gambas Pil Pil Shrimp with…",[1099],"","",""]]},{"name":"Mains","items":[["Broccoli Shitake Mush…",[745],"v","","images/pan-asian-mains-broccoli-shitake-mush.jpg"],["Asparagus Tofu Chili Garlic",[745],"v","","images/pan-asian-mains-asparagus-tofu-chili-garlic.jpg"],["Exotic Mushroom Fr…",[745],"v","","images/pan-asian-mains-exotic-mushroom-fr.jpg"],["Stir Fried Sichuan Chic…",[795],"","",""],["Chicken in Black Bean S…",[795],"","","images/pan-asian-mains-chicken-in-black-bean-s.jpg"],["Chicken in Katsu Curry",[795],"","",""],["Red Thai Curry - Chicken / P…",[795,895],"","","images/pan-asian-mains-red-thai-curry-chicken-p.jpg"],["Green Thai Curry",[745],"v","","images/pan-asian-mains-green-thai-curry.jpg"],["Hakka Noodles Veg/Chicken…",[345,395,495],"","",""],["Chilly Garlic Noodles - Ve…",[375,425,525],"","",""],["Burnt Garlic Fried Rice - V…",[375,395],"","",""],["Chilli Garlic Fried Rice - V…",[345,425,525],"","",""]]}]}];
+const BEV = [{"group":"Cocktails","cats":[{"name":"Rizq Collective Cocktails","items":[["Smokey Bar Be Que",[1400],"","","images/cocktails-rizq-collective-cocktails-smokey-bar-be-que.jpg"],["Concord",[1400],"","","images/cocktails-rizq-collective-cocktails-concord.jpg"],["Herb Soiree",[1200],"","","images/cocktails-rizq-collective-cocktails-herb-soiree.jpg"],["Natures Greens Nectar",[1200],"","","images/cocktails-rizq-collective-cocktails-natures-greens-nectar.jpg"],["Spiked Lohusa Serbet",[1200],"","","images/cocktails-rizq-collective-cocktails-spiked-lohusa-serbet.jpg"],["Saffron Sherbota",[999],"","","images/cocktails-rizq-collective-cocktails-saffron-sherbota.jpg"],["The Greener Grass",[999],"","",""],["Floral & Spiced Arak",[999],"","","images/cocktails-rizq-collective-cocktails-floral-spiced-arak.jpg"],["Raki Therapy",[999],"","","images/cocktails-rizq-collective-cocktails-raki-therapy.jpg"],["Floral Berrygenius",[999],"","","images/cocktails-rizq-collective-cocktails-floral-berrygenius.jpg"],["Stone Fruit",[999],"","",""],["Kamikaze Shot",[499],"gn","",""]]},{"name":"Wednesday Special Sufi Cocktails","items":[["Mystical Vibes",[695],"","","images/cocktails-wednesday-special-sufi-cocktails-mystical-vibes.jpg"],["Zahrat Fusions",[695],"","","images/cocktails-wednesday-special-sufi-cocktails-zahrat-fusions.jpg"],["Warda Warda",[795],"","","images/cocktails-wednesday-special-sufi-cocktails-warda-warda.jpg"],["Abarquq -E-Noor",[695],"","","images/cocktails-wednesday-special-sufi-cocktails-abarquq-e-noor.jpg"],["Jaam- E- Rizq",[695],"","",""]]},{"name":"Classic Cocktail","items":[["Negroni",[999],"","","images/cocktails-classic-cocktail-negroni.jpg"],["Picante",[999],"","","images/cocktails-classic-cocktail-picante.jpg"],["Old Fashioned",[799],"","","images/cocktails-classic-cocktail-old-fashioned.jpg"],["Cosmopolitan",[799],"","","images/cocktails-classic-cocktail-cosmopolitan.jpg"],["Bloody Marry",[799],"","","images/cocktails-classic-cocktail-bloody-marry.jpg"],["Red Wine Sangria",[799],"","","images/cocktails-classic-cocktail-red-wine-sangria.jpg"],["Bloody Mary",[799],"","","images/cocktails-classic-cocktail-bloody-mary.jpg"],["White Wine Sangria",[799],"","","images/cocktails-classic-cocktail-white-wine-sangria.jpg"],["Mojito",[799],"","","images/cocktails-classic-cocktail-mojito.jpg"],["LIIT Red Bull",[1099],"gns","",""],["Cranberry LIIT",[1049],"gns","",""],["Orange LIIT",[1049],"gns","",""],["Margarita",[999],"","",""],["Mulled Wine",[999],"","",""]]}]},{"group":"Beers","cats":[{"name":"Beer","note":"Bucket of 5 available","items":[["Bira 91 Blonde",[445],"","",""],["Bira White",[525],"","",""],["Corona Extra",[525],"","",""],["Hoegaarden",[525],"","",""],["Budweiser",[445],"","",""],["Amstel Light",[665],"","",""],["Miller High Life",[445],"","Bucket of 5 · ₹1,820",""]]}]},{"group":"Wine","cats":[{"name":"White Wine","note":"Glass / Bottle","items":[["Ag 47 Chardonnay",[999,3999],"","",""],["Mateus Rose",[1099,4499],"","",""],["Black Tower Riesling",[999,3999],"","",""],["Golden Sparrow Pino…",[700,3200],"","",""],["Fishing Cat Pinot Grigio",[3599],"","",""],["Bush Ballad Chardonnay",[749,2999],"","",""],["Monte Pacifico Chardonnay",[1049,4199],"","",""],["19 Crimes Chardonnay",[2099,8999],"","",""],["I Heart Riesling",[1249,4999],"","",""],["Golden Sparrow Cha…",[799,3199],"","",""],["Black Tower Pinot Noir Ro…",[1649,7499],"","",""]]},{"name":"Red Wine","note":"Glass / Bottle","items":[["Ag 47 Shiraz Malbec",[999,3999],"","",""],["19 Crimes Cabernet Sa…",[8999],"","",""],["BPDR Cadet D'oc",[5499],"","",""],["Black Tower Pinot Noir",[999,3999],"","",""],["Marius Syrah Grenache",[1200,5500],"","",""],["Torresella Merlot",[1199,4999],"","",""],["Two Oceans Pinotage",[999,3999],"","",""],["Two Oceans Shiraz",[979,3949],"","",""],["Black Tower Dornfelder Pi…",[999,3999],"","",""],["Monte Pacifico Merlot",[1049,4199],"","",""],["Monte Pacifico Reserva Pino…",[1599,6900],"","",""],["Torresela Merlot",[1199,4999],"","",""],["Fishing Cat Cabernet Sau…",[749,2999],"","",""],["Fishing Cat Merlot",[749,2999],"","",""],["Fishing Cat Montepulcino…",[13999],"","",""]]},{"name":"Champagne / Sparkling Wine","items":[["Moët & Chandon",[15000],"","",""],["Cinzano Prosecco",[8000],"","",""]]}]},{"group":"Spirits","cats":[{"name":"Whiskeys From Around The World","note":"Pour / Bottle","items":[["J.W. Blue Label",[3645,79999],"","",""],["The Yamazaki Distillers Res…",[1425],"","",""],["Hibiki",[1425],"","",""],["Glenfiddich 15 Yo",[765,16999],"","",""],["The Balvenie 12 Yo",[899,20999],"","",""],["Lucifers Gold Bourbon Whi…",[269,5500],"","",""],["Laphroaig 10 Yo",[675,14999],"","",""],["J.W. Gold Label",[735,21999],"","",""],["Suntory Toki",[645],"","",""],["Bushmills Irish Whiskey",[375,6999],"","",""],["Glenfiddich 12 Yo",[645,12999],"","",""],["The Glenmorangie…",[645,12999],"","",""],["Monkey Shoulder",[575,11999],"","",""],["Talisker 10 Yo",[575,11999],"","",""],["Singleton 12 Yo",[645,12999],"","",""],["Singleton 15 Yo",[765,15999],"","",""],["J.W. Black Label",[495,10999],"","",""],["Jack Daniel's Old No 7",[445,9999],"","",""],["Jim Beam W…",[425,7999],"","",""],["Talisker Storm",[775,16999],"","",""],["Buffalo Trace Bourbon",[745],"","",""],["J.W. Blonde",[449],"","",""],["Grant's Reserve",[357,6999],"","",""],["J.W. Red Label",[365,7900],"","",""],["Jura 10 Years",[845,16499],"","",""],["Aberfeldy 12 Year Old Sco…",[645,13999],"","",""],["Dewar's 12 Year Old Ble…",[399,9100],"","",""],["Dewar's 15 Year Old Ble…",[525,11799],"","",""],["Maker's Mark",[650],"","",""],["The Macallan",[899,20999],"","",""],["Jura Aged 18 Y",[1399,29999],"","",""],["Dewar's 21 Yo Doub…",[1695,24999],"","",""],["Glenfiddich 21 Yo",[3299,71999],"","",""],["Hibiki Suntory Japanese Har…",[3645,79999],"","",""],["Macallan 15 Yo Double C…",[2580,60999],"","",""],["Laphroaig Select",[730,15999],"","",""],["Dewar's 18 Year Old Ble…",[780,17999],"","",""],["Glenfiddich 18 Yo",[1425,31999],"","",""]]},{"name":"Gin","note":"Pour / Bottle","items":[["Jodhpur",[645,12999],"","",""],["Tanqueray 10",[645,12999],"","",""],["Roku",[645,12999],"","",""],["Hendrick's",[595,12999],"","",""],["Hapusa The Himalyan Dry…",[545,11499],"","",""],["Tanqueray",[395,6999],"","",""],["Bombay Sapphire",[395,6999],"","",""],["Crafters London Dry",[495,14999],"","",""],["Kingsmill",[295,5500],"","",""],["Stranger & Sons",[345,6499],"","",""],["Monkey 47",[725,11499],"","",""],["Samsara",[345,6499],"","",""],["Caorunn",[480,10499],"","",""],["Terai",[395,6999],"","",""]]},{"name":"Vodka","note":"Pour / Bottle","items":[["Roberto Cavalli",[725],"","",""],["Beluga Noble",[885,19999],"","",""],["Grey Goose",[525,11499],"","",""],["Belvedere",[675,11499],"","",""],["Stolichnaya Gold Premium",[575,11999],"","",""],["Tito's Handmade G…",[545,6999],"","",""],["Stolichnaya",[375,6999],"","",""],["Elite",[720,15999],"","",""]]},{"name":"Tequila","note":"Pour / Bottle","items":[["Patron Reposado",[899,18999],"","",""],["Corralejo Reposado",[895],"","",""],["Patron Silver",[699,15999],"n","",""],["Don Angel Blanco",[545,11999],"","",""],["La Chica Gold",[445,9999],"","",""],["La Chica Silver",[445,9499],"","",""],["Fandango Mezcal",[845,18999],"","",""],["Jose Cuervo Reposado",[525],"","",""],["Jose Silver",[445],"gn","",""],["Corralejo Anejo",[1199,25999],"","",""],["Don Julio Reposado",[999],"","",""],["Don Julio Blanco",[1099],"","",""]]},{"name":"Rum","note":"Pour / Bottle","items":[["Bacardi Ron Carta Blanca",[275,4999],"","",""],["Old Monk",[245,3999],"","",""]]},{"name":"Cognac","items":[["Martell V.S",[645],"","",""],["Remy Martin VSOP",[1280],"","",""]]},{"name":"Aperitif","items":[["Martini Dry",[450],"","",""],["Bianco",[450],"","",""],["Aperol",[450],"","",""],["Amaro Montenegro",[450],"","",""],["Campari",[450],"","",""]]},{"name":"Flavoured Spirits","items":[["Jagermeister",[545,11499],"","",""],["Xenta Absenthe",[545],"","",""],["Molinari Sambuca",[425],"","",""]]}]},{"group":"Non-Alcoholic Beverages","cats":[{"name":"Smoothies","items":[["Green Herb Nectar",[450],"","",""],["Grass N Fruit",[450],"","",""],["Citrus # 3",[450],"","",""]]},{"name":"Vegan Smoothies","items":[["C… Shine",[450],"","",""],["Earthy Root Blast",[450],"","",""]]},{"name":"Summer Coolers","items":[["Minty Berries",[375],"","",""],["Yellow Pinelime",[375],"","",""],["Summer Star",[375],"","",""],["Melon Spritezer",[375],"","",""],["Adams Apple Blast",[375],"","",""]]},{"name":"Rizq Collective Mocktails","items":[["Tangerine Punch",[450],"","",""],["Citrus Sensation",[450],"","",""],["Nutritious Nature",[450],"","",""],["Love Craft",[450],"","",""]]}]},{"group":"Tea & Coffee","cats":[{"name":"Flavoured Iced Tea","items":[["Berry Tea",[395],"","",""],["Strawberry Tea",[395],"","",""],["Fantasy Tea",[395],"","",""],["Mango Tea",[395],"","",""],["Cold Coffee",[395],"","",""]]},{"name":"Tea","items":[["First Flush First Invoice Darje…",[149],"","",""],["Assam Black Gold",[199],"","",""],["Camomile",[149],"","",""],["Jasmine White",[299],"","",""],["Mango Natural",[149],"","",""],["Champagne Tea",[299],"","",""],["Spearmint",[120],"","",""],["Raspberry Green Tea",[120],"","",""],["Peppermint Leaves",[120],"","",""],["Hibiscus Infusion",[149],"","",""],["Japanese Sencha",[199],"","",""],["Japanese Macha",[299],"","",""],["Lapsong Suchong",[199],"","",""],["Ginseng Wellness Tea",[249],"","",""],["Jasmine White Mondrop",[249],"","",""],["Kashmiri Kahwa",[149],"","",""],["Emerald Green Tea",[199],"","",""],["Jasmine Green Tea",[120],"","",""],["Ginger Tea",[120],"gn","",""],["Peach Tea",[120],"gn","",""],["Rose Tea",[120],"gn","",""],["Earl Grey",[120],"gn","",""],["Second Flush Darjeeling",[149],"gn","",""],["Assam Super Golden",[149],"gn","",""],["Royal Muscatel Darjeeling",[199],"gn","",""],["Emperor Gold",[299],"gn","",""]]},{"name":"Coffee","items":[["Cappuccino",[349],"","",""],["Latte",[350],"","",""],["Espresso",[345],"","",""],["Americano",[345],"","",""]]}]},{"group":"Juices","cats":[{"name":"Cold Pressed Juices","items":[["Pineapple",[395],"","",""],["Orange",[395],"","",""],["Watermelon",[395],"","",""],["Green Apple",[395],"","",""],["Grape Fruit",[395],"","",""],["Mixed Fruit",[395],"","",""]]}]},{"group":"Aerated Beverages","cats":[{"name":"Aerated Beverages","items":[["Coke",[185],"","",""],["Diet Coke",[190],"","",""],["Ginger Ale",[200],"","",""],["Ginger Beer",[200],"","",""]]},{"name":"Energy Drinks","items":[["Red Bull",[349],"","",""],["Red Bull Sugar Free",[349],"","",""],["Red Bull Limited Edition",[349],"","",""]]},{"name":"Tonic Water / Water","items":[["Schweppes",[200],"","",""],["Peer",[200],"","",""],["Perrier Water",[399],"","",""],["Veen - Still Natural Mineral Water",[345],"","",""]]}]}];
+const SHISHA = [{"group":"The Shisha Al-Chemist","cats":[{"name":"New Launch Bollywood Special Mixes By Black Ji","note":"Bollywood Special","items":[["Sholay",[2800],"","","images/the-shisha-al-chemist-new-launch-bollywood-special-mixes-by-black-ji-sholay.jpg"],["Devdas",[2800],"","","images/the-shisha-al-chemist-new-launch-bollywood-special-mixes-by-black-ji-devdas.jpg"],["Stree",[2800],"","","images/the-shisha-al-chemist-new-launch-bollywood-special-mixes-by-black-ji-stree.jpg"],["Housefull",[2800],"","","images/the-shisha-al-chemist-new-launch-bollywood-special-mixes-by-black-ji-housefull.jpg"],["Rockstar",[2800],"","","images/the-shisha-al-chemist-new-launch-bollywood-special-mixes-by-black-ji-rockstar.jpg"]]},{"name":"Black Ji Special \"Summer Cooler\"","items":[["Floid Ji",[7500],"","","images/the-shisha-al-chemist-black-ji-special-summer-cooler-floid-ji.jpg"],["Long Iceland",[7500],"","","images/the-shisha-al-chemist-black-ji-special-summer-cooler-long-iceland.jpg"],["Forrest Berries",[7500],"","","images/the-shisha-al-chemist-black-ji-special-summer-cooler-forrest-berries.jpg"]]},{"name":"Signatures By Al-Chemist Black Ji","items":[["Black Ji",[5000],"","","images/the-shisha-al-chemist-signatures-by-al-chemist-black-ji-black-ji.jpg"],["Coffee Break",[5000],"","","images/the-shisha-al-chemist-signatures-by-al-chemist-black-ji-coffee-break.jpg"],["Greendizer",[5000],"","","images/the-shisha-al-chemist-signatures-by-al-chemist-black-ji-greendizer.jpg"],["Experience Shisha",[6000],"","","images/the-shisha-al-chemist-signatures-by-al-chemist-black-ji-experience-shisha.jpg"],["Flowery",[5000],"","","images/the-shisha-al-chemist-signatures-by-al-chemist-black-ji-flowery.jpg"],["Blue Ocean Breeze - The…",[5000],"","","images/the-shisha-al-chemist-signatures-by-al-chemist-black-ji-blue-ocean-breeze-the.jpg"]]},{"name":"New Launch - Bollywood Signature Mixes By Black Ji","items":[["Pushpa",[5000],"s","","images/the-shisha-al-chemist-new-launch-bollywood-signature-mixes-by-black-ji-pushpa.jpg"],["DDLJ",[5000],"s","","images/the-shisha-al-chemist-new-launch-bollywood-signature-mixes-by-black-ji-ddlj.jpg"],["Lagaan",[5000],"s","","images/the-shisha-al-chemist-new-launch-bollywood-signature-mixes-by-black-ji-lagaan.jpg"]]}]}];
+
+const MAIN = {food:FOOD, beverages:BEV, shisha:SHISHA};
+const TITLES = {food:["Fo","od"], beverages:["Bever","ages"], shisha:["Shi","sha"]};
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const money = p => "₹" + p.toLocaleString("en-IN");
+const count = d => d.reduce((a,g)=>a+g.cats.reduce((b,c)=>b+c.items.length,0),0);
+$("#sFood").firstChild.textContent = count(FOOD);
+$("#sBev").firstChild.textContent = count(BEV);
+$("#sShi").firstChild.textContent = count(SHISHA);
+
+let query = "", vegOnly = false, activeMain = "food";
+
+function visibleData(key){
+  const q = query.trim().toLowerCase();
+  const out = [];
+  MAIN[key].forEach(g=>{
+    const cats = [];
+    g.cats.forEach(c=>{
+      const items = c.items.filter(it=>{
+        if(vegOnly && key==="food" && !it[2].includes("v")) return false;
+        if(q && !(it[0].toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || g.group.toLowerCase().includes(q))) return false;
+        return true;
+      });
+      if(items.length) cats.push({...c, items, id:slug(key+"-"+g.group+"-"+c.name)});
+    });
+    if(cats.length) out.push({group:g.group, cats});
+  });
+  return out;
+}
+function tagsHTML(it){
+  const [name,prices,tags,note]=it, t=[];
+  if(tags.includes("s")) t.push('<span class="tag s">Signature</span>');
+  if(tags.includes("g")) t.push('<span class="tag g">Gluten Free</span>');
+  if(tags.includes("n")) t.push('<span class="tag n">Vegan</span>');
+  if(note) t.push('<span class="tag note">'+esc(note)+'</span>');
+  return t.length ? '<div class="tags">'+t.join("")+'</div>' : '';
+}
+const priceTxt = it => it[1].map(money).join(" / ");
+function listItem(it){
+  return '<li class="item"><div class="line"><span class="name">'+(it[2].includes("v")?'<i class="vd" title="Vegetarian"></i>':'')+esc(it[0])+
+    '</span><span class="dots"></span><span class="price">'+priceTxt(it)+'</span></div>'+tagsHTML(it)+'</li>';
+}
+function photoCard(it){
+  const img = it[4];
+  const ph = img
+    ? '<div class="ph zoom" data-img="'+esc(img)+'" data-name="'+esc(it[0])+'" data-price="'+esc(priceTxt(it))+'"><img src="'+esc(img)+'" alt="'+esc(it[0])+'" loading="lazy" decoding="async"></div>'
+    : '<div class="ph empty"><span>RIZQ</span></div>';
+  const veg = it[2].includes("v") ? '<i class="vd" title="Vegetarian"></i>' : '';
+  return '<li class="pcard">'+ph+'<div class="pb"><div class="line"><span class="name">'+veg+esc(it[0])+'</span><span class="price">'+priceTxt(it)+'</span></div>'+tagsHTML(it)+'</div></li>';
+}
+function sectionHTML(key){
+  const data = visibleData(key), [a,b] = TITLES[key];
+  let h = '<section class="section" id="'+key+'" data-main="'+key+'"><div class="section-head"><h2>'+a+'<em>'+b+'</em></h2><div class="rule"></div></div>';
+  if(!data.length) h += '<div class="empty-msg">No items match your search.</div>';
+  data.forEach(g=>{
+    h += '<div class="group"><div class="group-title">'+esc(g.group)+'</div><div class="cats">';
+    g.cats.forEach(c=>{
+      const gallery = c.items.some(it=>it[4]);
+      const head = '<h3>'+esc(c.name)+'</h3>'+(c.note?'<div class="note">'+esc(c.note)+'</div>':'')+'<span class="count">'+String(c.items.length).padStart(2,"0")+'</span>';
+      if(gallery){
+        h += '<article class="gal rv" id="'+c.id+'" data-main="'+key+'">'+head+'<ul class="pgrid">'+c.items.map(photoCard).join("")+'</ul></article>';
+      } else {
+        h += '<article class="cat rv" id="'+c.id+'" data-main="'+key+'">'+head+'<ul class="items">'+c.items.map(listItem).join("")+'</ul></article>';
+      }
+    });
+    h += '</div></div>';
+  });
+  return h + '</section>';
+}
+function render(){
+  $("#menu").innerHTML = sectionHTML("food") + sectionHTML("beverages") + sectionHTML("shisha");
+  buildChips(activeMain);
+  observe();
+}
+function buildChips(key){
+  const data = visibleData(key), names = {};
+  data.forEach(g=>g.cats.forEach(c=>names[c.name]=(names[c.name]||0)+1));
+  $("#chips").innerHTML = data.flatMap(g=>g.cats.map(c=>
+    '<a class="chip" href="#'+c.id+'" data-id="'+c.id+'">'+esc(c.name)+(names[c.name]>1?' · '+esc(g.group):'')+'</a>')).join("");
+}
+function setMain(key){
+  if(key===activeMain) return;
+  activeMain = key;
+  document.querySelectorAll("#switch button").forEach(b=>b.classList.toggle("on", b.dataset.go===key));
+  buildChips(key); $("#chips").scrollLeft = 0;
+}
+let io, io2;
+function observe(){
+  if(io) io.disconnect(); if(io2) io2.disconnect();
+  io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} }),{threshold:.04});
+  document.querySelectorAll(".rv").forEach(c=>io.observe(c));
+  io2 = new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting) return;
+      setMain(e.target.dataset.main);
+      document.querySelectorAll(".chip").forEach(ch=>{
+        const on = ch.dataset.id===e.target.id;
+        ch.classList.toggle("on", on);
+        if(on){ const box=$("#chips"); box.scrollTo({left:ch.offsetLeft-box.clientWidth/2+ch.clientWidth/2, behavior:"smooth"}); }
+      });
+    });
+  },{rootMargin:"-32% 0px -60% 0px"});
+  document.querySelectorAll(".cat,.gal").forEach(c=>io2.observe(c));
+  hoverTargets();
+}
+/* controls */
+document.querySelectorAll("#switch button").forEach(b=>b.addEventListener("click",()=>{
+  const t = document.getElementById(b.dataset.go); if(t) t.scrollIntoView({behavior:"smooth", block:"start"});
+}));
+$("#q").addEventListener("input",e=>{ query=e.target.value; render(); });
+$("#veg").addEventListener("change",e=>{ vegOnly=e.target.checked; render(); });
+$("#chips").addEventListener("click",e=>{
+  const a = e.target.closest(".chip"); if(!a) return; e.preventDefault();
+  if(moved>6) return;
+  document.getElementById(a.dataset.id)?.scrollIntoView({behavior:"smooth", block:"start"});
+});
+/* cursor-based scrolling: drag the category bar, wheel scrolls it sideways */
+const chips = $("#chips"), cur=$("#cur"), dot=$("#dot");
+let down=false, startX=0, startL=0, moved=0;
+chips.addEventListener("mousedown",e=>{ down=true; moved=0; startX=e.pageX; startL=chips.scrollLeft; cur.classList.add("drag"); });
+window.addEventListener("mouseup",()=>{ down=false; cur.classList.remove("drag"); });
+window.addEventListener("mousemove",e=>{ if(!down) return; const dx=e.pageX-startX; moved=Math.max(moved,Math.abs(dx)); chips.scrollLeft=startL-dx; });
+chips.addEventListener("wheel",e=>{ if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){ chips.scrollLeft += e.deltaY; e.preventDefault(); } },{passive:false});
+/* custom cursor */
+let mx=0,my=0,cx=0,cy=0;
+if(matchMedia("(pointer:fine)").matches){
+  window.addEventListener("mousemove",e=>{ mx=e.clientX; my=e.clientY; dot.style.transform="translate("+mx+"px,"+my+"px)"; });
+  (function loop(){ cx+=(mx-cx)*.16; cy+=(my-cy)*.16; cur.style.transform="translate("+cx+"px,"+cy+"px)"; requestAnimationFrame(loop); })();
+}
+function hoverTargets(){
+  document.querySelectorAll(".item,.pcard,.chip").forEach(el=>{
+    el.addEventListener("mouseenter",()=>cur.classList.add("hover"));
+    el.addEventListener("mouseleave",()=>cur.classList.remove("hover"));
+  });
+}
+document.querySelectorAll("button,a,input,label").forEach(el=>{
+  el.addEventListener("mouseenter",()=>cur.classList.add("hover"));
+  el.addEventListener("mouseleave",()=>cur.classList.remove("hover"));
+});
+/* lightbox */
+const lb=$("#lb");
+function closeLb(){ lb.classList.remove("open"); document.body.style.overflow=""; }
+document.addEventListener("click",e=>{
+  const z=e.target.closest(".ph.zoom");
+  if(z){ lb.querySelector("img").src=z.dataset.img; lb.querySelector("img").alt=z.dataset.name;
+    lb.querySelector(".cap").innerHTML=esc(z.dataset.name)+'<b>'+esc(z.dataset.price)+'</b>';
+    lb.classList.add("open"); document.body.style.overflow="hidden"; return; }
+  if(lb.classList.contains("open") && !e.target.closest("#lb img")) closeLb();
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeLb(); });
+/* progress + back to top */
+const up=$("#up"), prog=$("#progress");
+addEventListener("scroll",()=>{
+  const h=document.documentElement;
+  prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+"%";
+  up.classList.toggle("show", h.scrollTop>700);
+},{passive:true});
+up.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));
+render();
+</script>
+</body>
+</html>
